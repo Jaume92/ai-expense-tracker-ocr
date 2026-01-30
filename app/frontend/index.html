@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>AI Expense Tracker</title>
+
+<style>
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f4f8;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+.total-box {
+  background: white;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  font-size: 18px;
+  width: fit-content;
+}
+
+table {
+  width: 100%;
+  background: white;
+  border-collapse: collapse;
+}
+
+th {
+  background: #111;
+  color: white;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+  background: #f5f5f5;
+}
+
+a {
+  color: #0066ff;
+  text-decoration: none;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>AI Expense Tracker</h1>
+
+<div class="total-box">
+Total Gastado: <strong id="total">0 €</strong>
+</div>
+
+<table>
+<thead>
+<tr>
+  <th>Comercio</th>
+  <th>Fecha</th>
+  <th>Total (€)</th>
+  <th>Imagen</th>
+</tr>
+</thead>
+
+<tbody id="table-body">
+</tbody>
+</table>
+
+<script>
+
+async function loadExpenses() {
+
+  const response = await fetch("/expenses");
+  const data = await response.json();
+
+  const table = document.getElementById("table-body");
+  const totalBox = document.getElementById("total");
+
+  let totalSum = 0;
+
+  table.innerHTML = "";
+
+  data.forEach(expense => {
+
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${expense.merchant || "-"}</td>
+      <td>${expense.date || "-"}</td>
+      <td>${expense.total || "-"}</td>
+      <td>
+        <a target="_blank" href="/uploads/${expense.file}">
+          Ver imagen
+        </a>
+      </td>
+    `;
+
+    table.appendChild(row);
+
+    if (expense.total) {
+      totalSum += parseFloat(expense.total);
+    }
+  });
+
+  totalBox.innerText = totalSum.toFixed(2) + " €";
+}
+
+loadExpenses();
+
+</script>
+
+</body>
+</html>
